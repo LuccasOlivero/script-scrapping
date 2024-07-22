@@ -1,5 +1,7 @@
 const puppeteer = require("puppeteer");
 
+const allData = [];
+
 async function formalScrape() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -28,7 +30,7 @@ async function formalScrape() {
     });
   });
 
-  console.log(data.slice(0, 10));
+  allData.push(data.slice(0, 10));
   await browser.close();
 }
 
@@ -64,7 +66,7 @@ async function dressScrape() {
     }
   );
 
-  console.log(data.slice(0, 10));
+  allData.push(data.slice(0, 10));
 
   await browser.close();
 }
@@ -97,10 +99,12 @@ async function lacosteScrape() {
     });
   });
 
-  console.log(data.slice(0, 10));
+  allData.push(data.slice(0, 10));
   await browser.close();
 }
 
 lacosteScrape();
 formalScrape();
 dressScrape();
+
+console.log(allData);

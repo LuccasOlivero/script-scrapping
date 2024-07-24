@@ -1,7 +1,5 @@
 const puppeteer = require("puppeteer");
 
-const allData = [];
-
 async function formalScrape() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -21,7 +19,8 @@ async function formalScrape() {
 
       const imageNode = node.querySelector(".products__product-img");
       let imageUrl = imageNode?.style.backgroundImage || "";
-      imageUrl = imageUrl.slice(5, -2); // Eliminar 'url("' y '")'
+      // Eliminar 'url("' y '")'
+      imageUrl = imageUrl.slice(5, -2);
       // En caso de que `data-src` sea más confiable:
       if (!imageUrl && imageNode?.dataset.src) {
         imageUrl = imageNode.dataset.src;
@@ -29,9 +28,9 @@ async function formalScrape() {
       return { name, price, image: imageUrl };
     });
   });
-
-  allData.push(data.slice(0, 10));
   await browser.close();
+
+  return data.slice(0, 10);
 }
 
 async function dressScrape() {
@@ -42,7 +41,6 @@ async function dressScrape() {
     "https://www.grid.com.ar/indumentaria/remeras/hombre/unisex?initialMap=c&initialQuery=indumentaria&map=category-1,category-2,genero,genero"
   );
 
-  // Seleccionar todos los elementos que contienen las prendas y extraer la información
   const data = await page.$$eval(
     ".vtex-search-result-3-x-galleryItem",
     (nodes) => {
@@ -66,9 +64,9 @@ async function dressScrape() {
     }
   );
 
-  allData.push(data.slice(0, 10));
-
   await browser.close();
+
+  return data.slice(0, 10);
 }
 
 async function lacosteScrape() {
@@ -99,12 +97,21 @@ async function lacosteScrape() {
     });
   });
 
-  allData.push(data.slice(0, 10));
   await browser.close();
+
+  return data.slice(0, 10);
 }
 
-lacosteScrape();
-formalScrape();
-dressScrape();
+async function main() {
+  const dataArray = [];
 
-console.log(allData);
+  const data1 = await lacosteScrape();
+  const data2 = await formalScrape();
+  const data3 = await dressScrape();
+
+  dataArray.push(...data1, ...data2, ...data3);
+
+  console.log(dataArray);
+}
+
+main();
